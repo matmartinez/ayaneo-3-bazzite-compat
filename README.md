@@ -38,10 +38,12 @@ the panel spec/EDID, gamma22 EOTF, 60/72/90/120/144Hz, EDID H/V timings.
 **Test on device:** copy `ayaneo.3.oled.lua` to `~/.config/gamescope/scripts/`
 (create the dir if needed), reboot or restart the gamescope session.
 
-**Upstreaming:** fresh PR to `OpenGamingCollective/gamescope` targeting the
-`ogc` branch (naming convention `vendor.device.panel.lua`), noting that PR #11
-was lost in a rebase. Bazzite picks it up on its next gamescope bump. Keep
-ValveSoftware#2260 open for upstream-first.
+**Upstreaming: DONE.** [OpenGamingCollective/gamescope#19](https://github.com/OpenGamingCollective/gamescope/pull/19)
+**merged 2026-08-24** (approved by pastaq) — Bazzite picks it up on its next
+gamescope bump; until then the `~/.config/gamescope/scripts/` copy applies.
+Corrected version also submitted upstream at pastaq's request as
+[ValveSoftware/gamescope#2347](https://github.com/ValveSoftware/gamescope/pull/2347)
+(co-authored with sknowledge1, supersedes their #2260).
 
 ## Regression 2: magic modules (detachable controllers) not supported
 
