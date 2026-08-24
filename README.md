@@ -91,7 +91,7 @@ must be heap-allocated.
 - Coordination/interface feedback: comment posted on [ShadowBlip/OpenGamepadUI#528](https://github.com/ShadowBlip/OpenGamepadUI/issues/528)
 - OGUI overlay-mode plugin bug found while building the UI: reported as [ShadowBlip/OpenGamepadUI#535](https://github.com/ShadowBlip/OpenGamepadUI/issues/535)
 - OGUI plugin (`ogui-plugin/`): working on-device; registry/in-tree submission deliberately held until #528 answers plugin-vs-platform-code (packaging differs, code ports either way)
-- LKML series: pending interface feedback
+- LKML: **submitted 2026-08-24** — `[PATCH] HID: ayaneo: Add AYANEO 3 detachable controller driver`, Message-ID `20260824215041.79892-1-hello@matias.me`, based on hid.git for-next, To: Jiri Kosina + Benjamin Tissoires, Cc: linux-input, LKML, Antheas Kapenekakis, Denis Benato (his Reviewed-by included per linux-unstable#3). Track replies at https://lore.kernel.org/linux-input/20260824215041.79892-1-hello@matias.me/
 
 **Contribution plan (maintainer-blessed pattern):**
 1. **Kernel:** write/land `hid-ayaneo` implementing what hhd does over hidraw
