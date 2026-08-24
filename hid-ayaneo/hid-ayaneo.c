@@ -385,13 +385,15 @@ static int aya3_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	if (!dmi_check_system(aya3_dmi_table))
 		return -ENODEV;
 
+	if (!hid_is_usb(hdev))
+		return -ENODEV;
+
 	ret = hid_parse(hdev);
 	if (ret)
 		return ret;
 
 	/* Bind only the vendor interface, not the gamepad/keyboard ones */
-	if (!hid_is_usb(hdev) ||
-	    hdev->collection->usage != (HID_UP_MSVENDOR | 0x0001))
+	if (hdev->collection->usage != (HID_UP_MSVENDOR | 0x0001))
 		return -ENODEV;
 
 	aya = devm_kzalloc(&hdev->dev, sizeof(*aya), GFP_KERNEL);
