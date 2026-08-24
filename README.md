@@ -83,6 +83,8 @@ must be heap-allocated.
 **Submitted:**
 - Driver: [OpenGamingCollective/linux#101](https://github.com/OpenGamingCollective/linux/pull/101) (base `features/ayaneo`, checkpatch-clean, with MAINTAINERS + ABI docs)
 - Config: [OpenGamingCollective/kernel-packages#35](https://github.com/OpenGamingCollective/kernel-packages/pull/35) (`CONFIG_HID_AYANEO=m`)
+- Driver review (per pastaq): [OpenGamingCollective/linux-unstable#3](https://github.com/OpenGamingCollective/linux-unstable/pull/3)
+- Plugin udev rule (plugin-store prerequisite per pastaq): [ShadowBlip/OpenGamepadUI#536](https://github.com/ShadowBlip/OpenGamepadUI/pull/536); registry PR to OpenGamepadUI-plugins follows once merged
 - Coordination/interface feedback: comment posted on [ShadowBlip/OpenGamepadUI#528](https://github.com/ShadowBlip/OpenGamepadUI/issues/528)
 - OGUI overlay-mode plugin bug found while building the UI: reported as [ShadowBlip/OpenGamepadUI#535](https://github.com/ShadowBlip/OpenGamepadUI/issues/535)
 - OGUI plugin (`ogui-plugin/`): working on-device; registry/in-tree submission deliberately held until #528 answers plugin-vs-platform-code (packaging differs, code ports either way)
