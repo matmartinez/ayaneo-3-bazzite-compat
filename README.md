@@ -80,6 +80,12 @@ Protocol notes: 65-byte unnumbered reports, checksum = LE16 sum of bytes
 `hid_device_io_start()` for probe-time transactions; USB transfer buffers
 must be heap-allocated.
 
+**Submitted:**
+- Driver: [OpenGamingCollective/linux#101](https://github.com/OpenGamingCollective/linux/pull/101) (base `features/ayaneo`, checkpatch-clean, with MAINTAINERS + ABI docs)
+- Config: [OpenGamingCollective/kernel-packages#35](https://github.com/OpenGamingCollective/kernel-packages/pull/35) (`CONFIG_HID_AYANEO=m`)
+- Coordination/interface feedback: comment posted on [ShadowBlip/OpenGamepadUI#528](https://github.com/ShadowBlip/OpenGamepadUI/issues/528)
+- LKML series: pending interface feedback
+
 **Contribution plan (maintainer-blessed pattern):**
 1. **Kernel:** write/land `hid-ayaneo` implementing what hhd does over hidraw
    (init sequence, module ID table, eject protocol, RGB as a LED class device

@@ -121,7 +121,7 @@ static int aya3_cmd(struct aya3 *aya, u8 *resp)
 		}
 
 		if (wait_for_completion_timeout(&aya->resp_done,
-				msecs_to_jiffies(AYA3_CMD_TIMEOUT_MS))) {
+						msecs_to_jiffies(AYA3_CMD_TIMEOUT_MS))) {
 			if (resp)
 				memcpy(resp, aya->resp, AYA3_RESP_SIZE);
 			return 0;
