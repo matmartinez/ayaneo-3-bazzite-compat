@@ -1,0 +1,14 @@
+{
+  "plugin.id": "ayaneo-modules",
+  "plugin.name": "AYANEO Magic Modules",
+  "plugin.version": "0.1.0",
+  "plugin.min-api-version": "2.0.0",
+  "plugin.link": "https://github.com/matmartinez/ayaneo-3-bazzite-compat",
+  "plugin.source": "https://github.com/matmartinez/ayaneo-3-bazzite-compat",
+  "plugin.description": "Pop out and identify the AYANEO 3 detachable controller modules (Magic Modules). Requires the hid-ayaneo and ayaneo-ec kernel drivers.",
+  "store.tags": ["quick-bar", "ayaneo", "hardware"],
+  "store.images": [],
+  "author.name": "Matías Martínez",
+  "author.email": "hello@matias.me",
+  "entrypoint": "plugin.gd"
+}

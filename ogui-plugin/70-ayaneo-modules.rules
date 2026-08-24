@@ -1,0 +1,17 @@
+# Development udev rules for the AYANEO 3 magic modules stack.
+# Grants the wheel group write access to the sysfs attributes that the
+# OpenGamepadUI plugin needs, so it can run unprivileged.
+#
+# NOTE: this is a stopgap for development. The final privilege model
+# (udev rule shipped by the OS/driver packaging vs. OGUI in-tree
+# platform code using its pkexec pattern) is pending maintainer
+# feedback in ShadowBlip/OpenGamepadUI#528.
+
+# hid-ayaneo: eject/reset on the vendor HID device (rebinds on every
+# controller power cycle, hence a rule instead of a one-shot chmod)
+ACTION=="add|bind", SUBSYSTEM=="hid", DRIVER=="hid-ayaneo", \
+  RUN+="/bin/sh -c 'chgrp wheel /sys%p/eject /sys%p/reset && chmod g+w /sys%p/eject /sys%p/reset'"
+
+# ayaneo-ec: controller power toggle
+ACTION=="add", DEVPATH=="*/platform/ayaneo-ec", \
+  RUN+="/bin/sh -c 'chgrp wheel /sys%p/controller_power && chmod g+w /sys%p/controller_power'"

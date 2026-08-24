@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://core/ui/card_ui/quick_bar/qb_card.tscn" id="1_qbcard"]
+[ext_resource type="Script" path="res://plugins/ayaneo-modules/core/modules_card.gd" id="2_content"]
+
+[node name="MagicModulesCard" instance=ExtResource("1_qbcard")]
+title = "Magic Modules"
+
+[node name="SectionLabel" parent="MarginContainer/CardVBoxContainer" index="0"]
+text = "Magic Modules"
+
+[node name="MagicModulesContent" type="VBoxContainer" parent="MarginContainer/CardVBoxContainer/ContentContainer" index="0"]
+layout_mode = 2
+script = ExtResource("2_content")
