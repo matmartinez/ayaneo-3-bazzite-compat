@@ -77,7 +77,8 @@ systemctl --user restart gamescope-session-plus@ogui-steam.service
   constructs `CardUIOverlayMode` twice; plugins initialize under an
   orphaned `PluginManager` whose subtree never enters the scene tree, so
   `_ready` never fires. `plugin.gd` detects this and reparents itself
-  into the live tree (`_rescue`). Should be reported/fixed upstream.
+  into the live tree (`_rescue`). Reported upstream as
+  [ShadowBlip/OpenGamepadUI#535](https://github.com/ShadowBlip/OpenGamepadUI/issues/535).
 - **Silent GDScript failures:** release export templates print no script
   errors; compile-check plugins against Godot 4.7 locally before
   deploying (see the harness pattern in the workbench history).
