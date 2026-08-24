@@ -102,7 +102,21 @@ static int aya3_send(struct aya3 *aya)
 	return 0;
 }
 
-/* Send the command in aya->xfer and wait for the echoing reply. */
+/**
+ * aya3_cmd() - send the command in aya->xfer and wait for the reply
+ * @aya: driver data; @aya->xfer holds the fully built 65-byte command
+ * @resp: destination for the AYA3_RESP_SIZE-byte reply, or NULL to
+ *        discard it
+ *
+ * The device echoes the subcommand byte of the command it is answering,
+ * which aya3_raw_event() uses to match replies. Unanswered commands are
+ * retried up to AYA3_CMD_ATTEMPTS times.
+ *
+ * Context: process context; the caller must hold @aya->lock, which
+ *          protects @aya->xfer and the reply state.
+ * Return: 0 on success, -ETIMEDOUT if every attempt went unanswered, or
+ *         a negative errno if sending failed.
+ */
 static int aya3_cmd(struct aya3 *aya, u8 *resp)
 {
 	int attempt, ret;
@@ -133,7 +147,7 @@ static int aya3_cmd(struct aya3 *aya, u8 *resp)
 
 static void aya3_checksum(u8 *buf)
 {
-	unsigned int sum = 0;
+	u16 sum = 0;
 	int i;
 
 	for (i = 7; i < AYA3_REPORT_SIZE; i++)
@@ -154,27 +168,27 @@ static int aya3_check(struct aya3 *aya, u8 *resp)
  */
 static int aya3_send_config(struct aya3 *aya, u8 eject)
 {
+	static const u8 template[AYA3_REPORT_SIZE] = {
+		[3] = AYA3_CMD_CONFIG,
+		[4] = AYA3_SUBCMD_CONFIG,
+		[22] = 0x33,
+		[23] = 0x22,	/* joystick sensitivity 100%/100% */
+		[32] = 0x01,
+		[37] = 0x64,
+		[38] = 0x64,
+	};
 	u8 *buf = aya->xfer;
-	u8 mode = AYA3_RGB_SOLID;
+	u8 mode = (aya->rgb[0] || aya->rgb[1] || aya->rgb[2]) ?
+		  AYA3_RGB_SOLID : AYA3_RGB_OFF;
 
-	if (!aya->rgb[0] && !aya->rgb[1] && !aya->rgb[2])
-		mode = AYA3_RGB_OFF;
-
-	memset(buf, 0, AYA3_REPORT_SIZE);
-	buf[3] = AYA3_CMD_CONFIG;
-	buf[4] = AYA3_SUBCMD_CONFIG;
+	memcpy(buf, template, AYA3_REPORT_SIZE);
 	/* Right ring, then left ring: mode, R, G, B */
 	buf[8] = mode;
 	memcpy(buf + 9, aya->rgb, 3);
 	buf[12] = mode;
 	memcpy(buf + 13, aya->rgb, 3);
 	buf[20] = eject;
-	buf[22] = 0x33;
-	buf[23] = 0x22;	/* joystick sensitivity 100%/100% */
 	buf[24] = aya->vibration << 4;
-	buf[32] = 0x01;
-	buf[37] = 0x64;
-	buf[38] = 0x64;
 	aya3_checksum(buf);
 
 	return aya3_cmd(aya, NULL);
@@ -323,6 +337,8 @@ static int aya3_led_set(struct led_classdev *cdev, enum led_brightness value)
 		aya->rgb[i] = min_t(unsigned int, aya->subleds[i].brightness, 255);
 
 	ret = aya3_send_config(aya, 0);
+	if (ret)
+		hid_err(aya->hdev, "failed to update RGB config: %d\n", ret);
 	mutex_unlock(&aya->lock);
 	return ret;
 }
@@ -337,7 +353,11 @@ static int aya3_register_led(struct aya3 *aya)
 	aya->mcled.subled_info = aya->subleds;
 	aya->mcled.num_colors = 3;
 
-	cdev->name = "ayaneo:rgb:joystick_rings";
+	cdev->name = devm_kasprintf(&aya->hdev->dev, GFP_KERNEL,
+				    "%s:rgb:joystick_rings",
+				    dev_name(&aya->hdev->dev));
+	if (!cdev->name)
+		return -ENOMEM;
 	cdev->brightness = 0;
 	cdev->max_brightness = 255;
 	cdev->brightness_set_blocking = aya3_led_set;
@@ -359,7 +379,6 @@ static const struct dmi_system_id aya3_dmi_table[] = {
 static int aya3_probe(struct hid_device *hdev, const struct hid_device_id *id)
 {
 	struct aya3 *aya;
-	u8 resp[AYA3_RESP_SIZE];
 	int ret;
 
 	/* The VID/PID is a generic SigmaMicro ID; bind on AYANEO 3 only */
@@ -402,16 +421,11 @@ static int aya3_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	/* Input reports are not delivered during probe by default */
 	hid_device_io_start(hdev);
 
-	mutex_lock(&aya->lock);
-	ret = aya3_check(aya, resp);
-	mutex_unlock(&aya->lock);
+	scoped_guard(mutex, &aya->lock)
+		ret = aya3_check(aya, NULL);
 	if (ret)
 		hid_warn(hdev, "controller did not answer status check: %d\n",
 			 ret);
-	else
-		hid_info(hdev, "modules: left 0x%02x right 0x%02x\n",
-			 resp[AYA3_RESP_MODULE_LEFT],
-			 resp[AYA3_RESP_MODULE_RIGHT]);
 
 	ret = aya3_register_led(aya);
 	if (ret)
