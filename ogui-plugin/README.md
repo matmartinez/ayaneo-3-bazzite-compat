@@ -47,6 +47,64 @@ make install   # copies dist/ayaneo-modules.zip to ~/.local/share/opengamepadui/
 in the OGUI checkout including `res://plugins/ayaneo-modules/*` — copy an
 existing plugin preset.)
 
+## Status
+
+Working end to end on an AYANEO 3 running Bazzite 44 (OGUI 0.46, overlay
+mode): card renders in the Quick Bar, controller focus works, module
+names live-update, and a full pop/reinsert cycle driven from the UI was
+verified on hardware. UI layout follows AYANEO's native MagicModule
+panel: state-carrying pop buttons, a Pop Both bar, and a fixed footer
+hint (the L/R-not-interchangeable warning from AYASpace).
+
+### Dev loop (no Godot export needed)
+
+The PluginLoader mounts plugin zips as plain resource packs and GDScript
+compiles at runtime, so a hand-built zip works:
+
+```sh
+python3 -c "import zipfile
+z = zipfile.ZipFile('ayaneo-modules.zip', 'w')
+for f in ['plugin.json', 'plugin.gd', 'core/magic_modules.gd', 'core/modules_card.gd', 'core/modules_card.tscn']:
+    z.write(f, 'plugins/ayaneo-modules/' + f)"
+cp ayaneo-modules.zip ~/.local/share/opengamepadui/plugins/
+rm -rf ~/.local/share/opengamepadui/plugins/ayaneo-modules  # stale extraction
+systemctl --user restart gamescope-session-plus@ogui-steam.service
+```
+
+### Hard-won integration notes
+
+- **Orphaned PluginManager (OGUI v0.46 overlay-mode bug):** overlay mode
+  constructs `CardUIOverlayMode` twice; plugins initialize under an
+  orphaned `PluginManager` whose subtree never enters the scene tree, so
+  `_ready` never fires. `plugin.gd` detects this and reparents itself
+  into the live tree (`_rescue`). Should be reported/fixed upstream.
+- **Silent GDScript failures:** release export templates print no script
+  errors; compile-check plugins against Godot 4.7 locally before
+  deploying (see the harness pattern in the workbench history).
+- **sysfs reads:** `FileAccess.get_as_text()` returns "" on sysfs files
+  (bogus reported size); read with `get_line()`.
+- **Quick Bar contract:** pass plain content (not a `qb_card` instance)
+  to `add_to_quick_bar`; the menu wraps it and consumes a child named
+  `SectionLabel` as the row title. Include a `FocusGroup`
+  (`core/systems/input/focus_group.tscn` with the quick-bar focus stack)
+  for controller navigation.
+- **No layout reflow:** avoid `Button.disabled` (its stylebox changes
+  size); dim with `modulate` and gate the press handler instead. Keep
+  the footer populated with fixed-height single-line text.
+- **Module ID table:** hhd's right-side base/rotated labels are swapped
+  relative to hardware; `magic_modules.gd` carries the corrected table
+  (0x50 = ABXY on top, verified on device).
+
+### Deferred: RGB row
+
+The kernel driver exposes `ayaneo:rgb:joystick_rings` (solid color), but
+InputPlumber's AYANEO 3 config references the same LED, so ownership
+must be checked before adding UI (same conflict class as OGUI PR #531 /
+SteamOS-Manager TDP). If it goes ahead: preset color swatches + a
+brightness slider (OGUI `slider.tscn`), as a separate row or card — not
+interleaved with the pop buttons. No existing OGUI RGB plugin to
+reference; the closest UI pattern is the core quick-settings sliders.
+
 ## Open questions (pending ShadowBlip/OpenGamepadUI#528 feedback)
 
 1. **External plugin vs. in-tree platform code.** OGUI has a

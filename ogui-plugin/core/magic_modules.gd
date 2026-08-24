@@ -34,15 +34,17 @@ const LEFT_MODULES := {
 	0x46: "Touchpad / Cross",
 	0x48: "Joystick / Direction",
 }
+## Note: hhd's table has the base/rotated labels for the right side
+## swapped relative to observed hardware (0x50 is ABXY on top).
 const RIGHT_MODULES := {
-	0x10: "ABXY \\ Joystick",
-	0x12: "ABXY \\ Touchpad",
-	0x14: "ABXYCZ",
-	0x16: "ABXY Film \\ Joystick",
-	0x50: "Joystick \\ ABXY",
-	0x52: "Touchpad \\ ABXY",
-	0x54: "ABXYCZ [R]",
-	0x56: "Joystick \\ ABXY Film",
+	0x10: "Joystick \\ ABXY",
+	0x12: "Touchpad \\ ABXY",
+	0x14: "ABXYCZ [R]",
+	0x16: "Joystick \\ ABXY Film",
+	0x50: "ABXY \\ Joystick",
+	0x52: "ABXY \\ Touchpad",
+	0x54: "ABXYCZ",
+	0x56: "ABXY Film \\ Joystick",
 }
 
 var logger := Log.get_logger("MagicModules")
@@ -165,7 +167,9 @@ func _read_sysfs(path: String) -> String:
 	var f := FileAccess.open(path, FileAccess.READ)
 	if not f:
 		return ""
-	return f.get_as_text().strip_edges()
+	# get_as_text() returns "" on sysfs files (they report a bogus
+	# size), so read line-wise instead.
+	return f.get_line().strip_edges()
 
 
 func _write_sysfs(path: String, value: String) -> bool:

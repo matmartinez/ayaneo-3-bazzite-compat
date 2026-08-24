@@ -1,14 +1,15 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
-[ext_resource type="PackedScene" path="res://core/ui/card_ui/quick_bar/qb_card.tscn" id="1_qbcard"]
-[ext_resource type="Script" path="res://plugins/ayaneo-modules/core/modules_card.gd" id="2_content"]
+[ext_resource type="Script" path="res://plugins/ayaneo-modules/core/modules_card.gd" id="1_content"]
+[ext_resource type="PackedScene" path="res://core/systems/input/focus_group.tscn" id="2_focus"]
+[ext_resource type="Resource" path="res://core/ui/card_ui/quick_bar/quick_bar_menu_focus.tres" id="3_stack"]
 
-[node name="MagicModulesCard" instance=ExtResource("1_qbcard")]
-title = "Magic Modules"
+[node name="MagicModulesContent" type="VBoxContainer"]
+script = ExtResource("1_content")
 
-[node name="SectionLabel" parent="MarginContainer/CardVBoxContainer" index="0"]
+[node name="SectionLabel" type="Label" parent="."]
+layout_mode = 2
 text = "Magic Modules"
 
-[node name="MagicModulesContent" type="VBoxContainer" parent="MarginContainer/CardVBoxContainer/ContentContainer" index="0"]
-layout_mode = 2
-script = ExtResource("2_content")
+[node name="FocusGroup" parent="." instance=ExtResource("2_focus")]
+focus_stack = ExtResource("3_stack")
