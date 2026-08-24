@@ -85,7 +85,7 @@ must be heap-allocated.
 **Submitted:**
 - Driver: [OpenGamingCollective/linux#101](https://github.com/OpenGamingCollective/linux/pull/101) (base `features/ayaneo`, checkpatch-clean, with MAINTAINERS + ABI docs)
 - Config: [OpenGamingCollective/kernel-packages#35](https://github.com/OpenGamingCollective/kernel-packages/pull/35) (`CONFIG_HID_AYANEO=m`)
-- Driver review (per pastaq): [OpenGamingCollective/linux-unstable#3](https://github.com/OpenGamingCollective/linux-unstable/pull/3)
+- Driver review (per pastaq): [OpenGamingCollective/linux-unstable#3](https://github.com/OpenGamingCollective/linux-unstable/pull/3) — NeroReflex's first review round addressed in 7 fix commits (2026-08-24, checkpatch-clean; squash into the single patch before LKML)
 - Plugin udev rule (plugin-store prerequisite per pastaq): [ShadowBlip/OpenGamepadUI#536](https://github.com/ShadowBlip/OpenGamepadUI/pull/536); registry PR to OpenGamepadUI-plugins follows once merged
 - Coordination/interface feedback: comment posted on [ShadowBlip/OpenGamepadUI#528](https://github.com/ShadowBlip/OpenGamepadUI/issues/528)
 - OGUI overlay-mode plugin bug found while building the UI: reported as [ShadowBlip/OpenGamepadUI#535](https://github.com/ShadowBlip/OpenGamepadUI/issues/535)
@@ -95,8 +95,10 @@ must be heap-allocated.
 **Contribution plan (maintainer-blessed pattern):**
 1. **Kernel:** write/land `hid-ayaneo` implementing what hhd does over hidraw
    (init sequence, module ID table, eject protocol, RGB as a LED class device
-   `ayaneo:rgb:joystick_rings` — InputPlumber's `50-ayaneo_3.yaml` already
-   expects that LED name). Coordinate with Antheas Kapenekakis (ayaneo-ec)
+   `<dev>:rgb:joystick_rings` — per-device prefix per linux-unstable#3 review;
+   InputPlumber's `50-ayaneo_3.yaml` matches `sys_name` by glob, so once the
+   driver lands it needs a one-line change to `*:rgb:joystick_rings`).
+   Coordinate with Antheas Kapenekakis (ayaneo-ec)
    and Derek J. Clark (OGC/ShadowBlip). Land upstream + in OGC
    kernel-packages (`config/ogc.config.set`) so Bazzite's kernel gets it.
 2. **OpenGamepadUI:** plugin replicating hhd's `modules.yml` UX
