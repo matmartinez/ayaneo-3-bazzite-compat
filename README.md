@@ -92,6 +92,7 @@ must be heap-allocated.
 - OGUI overlay-mode plugin bug found while building the UI: reported as [ShadowBlip/OpenGamepadUI#535](https://github.com/ShadowBlip/OpenGamepadUI/issues/535)
 - OGUI plugin (`ogui-plugin/`): working on-device; registry/in-tree submission deliberately held until #528 answers plugin-vs-platform-code (packaging differs, code ports either way)
 - LKML: **submitted 2026-08-24** — `[PATCH] HID: ayaneo: Add AYANEO 3 detachable controller driver`, Message-ID `20260824215041.79892-1-hello@matias.me`, based on hid.git for-next, To: Jiri Kosina + Benjamin Tissoires, Cc: linux-input, LKML, Antheas Kapenekakis, Denis Benato (his Reviewed-by included per linux-unstable#3). Track replies at https://lore.kernel.org/linux-input/20260824215041.79892-1-hello@matias.me/
+- LKML v2 sent 2026-08-24 (Message-ID `20260824223103.93947-1-hello@matias.me`, threaded into v1): fixes a real teardown UAF found via review + on-device stress repro (LED work racing unbind — also affects the merged OGC driver, backport pending), eject-loop bail, maxcollection guard, drops the joystick-sensitivity bytes (Antheas), adds breathing mode via hw_pattern (Antheas). Dmitry Torokhov added to Cc.
 
 **Contribution plan (maintainer-blessed pattern):**
 1. **Kernel:** write/land `hid-ayaneo` implementing what hhd does over hidraw
