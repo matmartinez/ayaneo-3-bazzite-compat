@@ -87,13 +87,25 @@ must be heap-allocated.
 - Config: [OpenGamingCollective/kernel-packages#35](https://github.com/OpenGamingCollective/kernel-packages/pull/35) (`CONFIG_HID_AYANEO=m`)
 - Driver: **MERGED** into [OpenGamingCollective/linux-unstable](https://github.com/OpenGamingCollective/linux-unstable/pull/3) (2026-08-24, by NeroReflex, after two review rounds + CI config-gate/gcc build; squashed `[FOR-UPSTREAM]` patch + `[NOT-FOR-UPSTREAM]` CI-fragment commit). The unstable OGC kernel now ships hid-ayaneo. Post-merge note: an AI-review claim that `hid_is_usb()` is uhid-spoofable was retracted as slop (since ~7.x it checks `ll_driver == &usb_hid_driver`, kernel-set); hid-ayaneo never casts `dev.parent` anyway.
 - InputPlumber LED-name glob (RGB keeps matching the renamed LED): [ShadowBlip/InputPlumber#666](https://github.com/ShadowBlip/InputPlumber/pull/666)
-- Plugin udev rule (plugin-store prerequisite per pastaq): [ShadowBlip/OpenGamepadUI#536](https://github.com/ShadowBlip/OpenGamepadUI/pull/536); registry PR to OpenGamepadUI-plugins follows once merged
+- Plugin udev rule (plugin-store prerequisite per pastaq): [ShadowBlip/OpenGamepadUI#536](https://github.com/ShadowBlip/OpenGamepadUI/pull/536) — **APPROVED** by pastaq 2026-08-27, awaiting merge; registry PR to OpenGamepadUI-plugins follows once merged
 - Coordination/interface feedback: comment posted on [ShadowBlip/OpenGamepadUI#528](https://github.com/ShadowBlip/OpenGamepadUI/issues/528)
 - OGUI overlay-mode plugin bug found while building the UI: reported as [ShadowBlip/OpenGamepadUI#535](https://github.com/ShadowBlip/OpenGamepadUI/issues/535)
 - OGUI plugin (`ogui-plugin/`): working on-device; registry/in-tree submission deliberately held until #528 answers plugin-vs-platform-code (packaging differs, code ports either way)
 - LKML: **submitted 2026-08-24** — `[PATCH] HID: ayaneo: Add AYANEO 3 detachable controller driver`, Message-ID `20260824215041.79892-1-hello@matias.me`, based on hid.git for-next, To: Jiri Kosina + Benjamin Tissoires, Cc: linux-input, LKML, Antheas Kapenekakis, Denis Benato (his Reviewed-by included per linux-unstable#3). Track replies at https://lore.kernel.org/linux-input/20260824215041.79892-1-hello@matias.me/
 - LKML v2 sent 2026-08-24 (Message-ID `20260824223103.93947-1-hello@matias.me`, threaded into v1): fixes a real teardown UAF found via review + on-device stress repro (LED work racing unbind — also affects the merged OGC driver, backport pending), eject-loop bail, maxcollection guard, drops the joystick-sensitivity bytes (Antheas), adds breathing mode via hw_pattern (Antheas). Dmitry Torokhov added to Cc. Scope discussion ongoing (Antheas endorses the LED part; eject scope deferred to HID maintainers); v3 held per reviewer pacing advice.
 - Teardown-UAF backport to the merged OGC driver: [OpenGamingCollective/linux-unstable#5](https://github.com/OpenGamingCollective/linux-unstable/pull/5) — **MERGED** 2026-08-25 (NeroReflex, on CI green); the unstable OGC kernel no longer ships the vulnerable teardown
+- pastaq (Derek J. Clark) posted an 11-point code review on linux-unstable#3
+  (2026-08-27). Adopted for v3 (staged in `hid-ayaneo/hid-ayaneo.c`, four
+  commits): generic `ayaneo_*` driver-plumbing names (wire protocol stays
+  `AYA3_*`), packed `aya3_config`/`aya3_resp` wire structs replacing offset
+  defines, `scoped_cond_guard` at every lock site, `LED_COLOR_ID_RGB` on the
+  LED classdev, vibration levels named in an enum. Deferred to the v3 cover
+  letter (ABI growth while scope is under discussion): `rumble_intensity`
+  (+index), `eject_index`, and a hid-ayaneo→ayaneo-ec notification framework
+  (Cc pdx86: Ilpo, Armin). Factual replies: module/eject state is already
+  probed live per read; RGB/vibration has no read-back command in the known
+  protocol; sensitivity bytes were dropped entirely in v2. Reply drafted,
+  pending on-device retest before posting.
 
 **Contribution plan (maintainer-blessed pattern):**
 1. **Kernel:** write/land `hid-ayaneo` implementing what hhd does over hidraw
