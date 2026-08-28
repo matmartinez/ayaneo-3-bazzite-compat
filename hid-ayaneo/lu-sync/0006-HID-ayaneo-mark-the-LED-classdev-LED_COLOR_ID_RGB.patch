@@ -1,0 +1,50 @@
+From 867516244cbe20538f599cefa4936850f746f807 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mat=C3=ADas=20Mart=C3=ADnez?= <hello@matias.me>
+Date: Fri, 28 Aug 2026 19:17:27 -0400
+Subject: [PATCH 6/6] HID: ayaneo: mark the LED classdev LED_COLOR_ID_RGB
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Lets userspace detect the RGB interface generically, same as hid-msi,
+hid-oxp and hid-lenovo-go.
+
+Suggested-by: Derek J. Clark <derekjohn.clark@gmail.com>
+Signed-off-by: Matías Martínez <hello@matias.me>
+---
+ drivers/hid/hid-ayaneo.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/hid/hid-ayaneo.c b/drivers/hid/hid-ayaneo.c
+index 5338815..3a7af59 100644
+--- a/drivers/hid/hid-ayaneo.c
++++ b/drivers/hid/hid-ayaneo.c
+@@ -256,7 +256,7 @@ static int ayaneo_send_config(struct ayaneo *aya, u8 eject)
+ }
+ 
+ static int ayaneo_raw_event(struct hid_device *hdev, struct hid_report *report,
+-			  u8 *data, int size)
++			    u8 *data, int size)
+ {
+ 	struct ayaneo *aya = hid_get_drvdata(hdev);
+ 	const struct aya3_resp *resp = (const struct aya3_resp *)data;
+@@ -417,7 +417,7 @@ static int ayaneo_led_set(struct led_classdev *cdev, enum led_brightness value)
+  * (the firmware always repeats indefinitely).
+  */
+ static int ayaneo_pattern_set(struct led_classdev *cdev,
+-			    struct led_pattern *pattern, u32 len, int repeat)
++			      struct led_pattern *pattern, u32 len, int repeat)
+ {
+ 	struct led_classdev_mc *mc = lcdev_to_mccdev(cdev);
+ 	struct ayaneo *aya = container_of(mc, struct ayaneo, mcled);
+@@ -461,6 +461,7 @@ static int ayaneo_register_led(struct ayaneo *aya)
+ 				    dev_name(&aya->hdev->dev));
+ 	if (!cdev->name)
+ 		return -ENOMEM;
++	cdev->color = LED_COLOR_ID_RGB;
+ 	cdev->brightness = 0;
+ 	cdev->max_brightness = 255;
+ 	cdev->brightness_set_blocking = ayaneo_led_set;
+-- 
+2.54.0 (Apple Git-157)
+

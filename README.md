@@ -104,8 +104,18 @@ must be heap-allocated.
   (+index), `eject_index`, and a hid-ayaneo→ayaneo-ec notification framework
   (Cc pdx86: Ilpo, Armin). Factual replies: module/eject state is already
   probed live per read; RGB/vibration has no read-back command in the known
-  protocol; sensitivity bytes were dropped entirely in v2. Reply drafted,
-  pending on-device retest before posting.
+  protocol; sensitivity bytes were dropped entirely in v2. Reworked driver
+  hardware-retested 2026-08-27; reply posted. His review-body debounce
+  question (mod_delayed_work on RGB writes) resolved 2026-08-28 with source
+  tracing + on-device measurements (5.3 ms avg command round trip; 1000
+  back-to-back sysfs stores in 12 ms, coalesced by the LED core's
+  `brightness_set_blocking` deferral): "not a blocker for v3".
+- Full v2/v3 sync to the OGC tree:
+  [OpenGamingCollective/linux-unstable#11](https://github.com/OpenGamingCollective/linux-unstable/pull/11)
+  — **opened 2026-08-28**, six commits (v2 remainder, timing constants, then
+  the four review adoptions with Suggested-by: Derek J. Clark); end state
+  byte-identical to `hid-ayaneo/hid-ayaneo.c`. Patches archived in
+  `hid-ayaneo/lu-sync/`.
 
 **Contribution plan (maintainer-blessed pattern):**
 1. **Kernel:** write/land `hid-ayaneo` implementing what hhd does over hidraw

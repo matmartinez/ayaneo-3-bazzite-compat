@@ -1,0 +1,66 @@
+From 4ff3caa4ab1c87b8dd57442e2d37a7198d781048 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mat=C3=ADas=20Mart=C3=ADnez?= <hello@matias.me>
+Date: Fri, 28 Aug 2026 19:17:27 -0400
+Subject: [PATCH 2/6] HID: ayaneo: name and justify firmware timing constants
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Replace the bare msleep/loop-bound literals with named constants and
+a comment recording where the timings come from (the Handheld Daemon
+implementation of this protocol) and what was validated on hardware.
+
+Signed-off-by: Matías Martínez <hello@matias.me>
+---
+ drivers/hid/hid-ayaneo.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/hid/hid-ayaneo.c b/drivers/hid/hid-ayaneo.c
+index fc133ab..27080ea 100644
+--- a/drivers/hid/hid-ayaneo.c
++++ b/drivers/hid/hid-ayaneo.c
+@@ -44,8 +44,21 @@
+ 
+ #define AYA3_REPORT_SIZE	65
+ #define AYA3_RESP_SIZE		64
++
++/*
++ * Empirical timings, inherited from the Handheld Daemon
++ * implementation of this protocol and validated on hardware: the
++ * device answers well within 300ms or not at all, needs about half
++ * a second to settle after a reset before it accepts a new
++ * configuration, and completes an eject handshake within a few
++ * seconds (polled below at a rate that keeps the sysfs write
++ * responsive).
++ */
+ #define AYA3_CMD_TIMEOUT_MS	300
+ #define AYA3_CMD_ATTEMPTS	3
++#define AYA3_RESET_SETTLE_MS	500
++#define AYA3_EJECT_POLL_MS	400
++#define AYA3_EJECT_POLLS	20
+ 
+ /* Subcommands (byte 4); byte 3 is 0x00 except for the config command */
+ #define AYA3_SUBCMD_CHECK	0x08
+@@ -282,8 +295,8 @@ static ssize_t eject_store(struct device *dev, struct device_attribute *attr,
+ 	 * the module to be physically released.
+ 	 */
+ 	ret = -ETIMEDOUT;
+-	for (i = 0; i < 20; i++) {
+-		msleep(400);
++	for (i = 0; i < AYA3_EJECT_POLLS; i++) {
++		msleep(AYA3_EJECT_POLL_MS);
+ 		err = aya3_check(aya, resp);
+ 		if (err == -ETIMEDOUT)
+ 			continue;	/* busy mid-eject, keep polling */
+@@ -320,7 +333,7 @@ static ssize_t reset_store(struct device *dev, struct device_attribute *attr,
+ 		return ret;
+ 	ret = aya3_send_config(aya, AYA3_RESET);
+ 	if (!ret) {
+-		msleep(500);
++		msleep(AYA3_RESET_SETTLE_MS);
+ 		ret = aya3_send_config(aya, 0);
+ 	}
+ 	mutex_unlock(&aya->lock);
+-- 
+2.54.0 (Apple Git-157)
+
