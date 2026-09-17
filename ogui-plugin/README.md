@@ -1,5 +1,12 @@
 # AYANEO Magic Modules — OpenGamepadUI plugin
 
+> **Moved.** Development continues in
+> [matmartinez/OpenGamepadUI-ayaneo-modules](https://github.com/matmartinez/OpenGamepadUI-ayaneo-modules)
+> (split from here with history on 2026-09-17 for the plugin-store
+> release; registry PR
+> [ShadowBlip/OpenGamepadUI-plugins#9](https://github.com/ShadowBlip/OpenGamepadUI-plugins/pull/9)).
+> This directory is frozen at the split point.
+
 Quick Bar card for the AYANEO 3 detachable controller: shows which module
 is inserted on each side and provides Pop Left / Pop Right / Pop Both,
 replicating the UX Handheld Daemon used to offer.

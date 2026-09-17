@@ -104,7 +104,15 @@ must be heap-allocated.
 - Plugin udev rule (plugin-store prerequisite per pastaq): [ShadowBlip/OpenGamepadUI#536](https://github.com/ShadowBlip/OpenGamepadUI/pull/536) — **MERGED** by pastaq 2026-09-03, released in OpenGamepadUI **v0.46.1**; the registry PR to OpenGamepadUI-plugins is now unblocked (next plugin action)
 - Coordination/interface feedback: comment posted on [ShadowBlip/OpenGamepadUI#528](https://github.com/ShadowBlip/OpenGamepadUI/issues/528)
 - OGUI overlay-mode plugin bug found while building the UI: reported as [ShadowBlip/OpenGamepadUI#535](https://github.com/ShadowBlip/OpenGamepadUI/issues/535)
-- OGUI plugin (`ogui-plugin/`): working on-device; registry/in-tree submission deliberately held until #528 answers plugin-vs-platform-code (packaging differs, code ports either way)
+- OGUI plugin: **submitted to the plugin store 2026-09-17** as
+  [ShadowBlip/OpenGamepadUI-plugins#9](https://github.com/ShadowBlip/OpenGamepadUI-plugins/pull/9).
+  The plugin now lives in its own repo
+  [matmartinez/OpenGamepadUI-ayaneo-modules](https://github.com/matmartinez/OpenGamepadUI-ayaneo-modules)
+  (subtree-split from `ogui-plugin/` with history; that directory is
+  frozen at the split point), with release v1.0.0 carrying the store zip
+  (sha256 `0f30e9c2…`), hardware-verified byte-exact from the release
+  asset before the PR. Store entry has no icon yet; offered to follow up
+  if one is wanted.
 - LKML: **submitted 2026-08-24** — `[PATCH] HID: ayaneo: Add AYANEO 3 detachable controller driver`, Message-ID `20260824215041.79892-1-hello@matias.me`, based on hid.git for-next, To: Jiri Kosina + Benjamin Tissoires, Cc: linux-input, LKML, Antheas Kapenekakis, Denis Benato (his Reviewed-by included per linux-unstable#3). Track replies at https://lore.kernel.org/linux-input/20260824215041.79892-1-hello@matias.me/
 - LKML v2 sent 2026-08-24 (Message-ID `20260824223103.93947-1-hello@matias.me`, threaded into v1): fixes a real teardown UAF found via review + on-device stress repro (LED work racing unbind — also affects the merged OGC driver, backport pending), eject-loop bail, maxcollection guard, drops the joystick-sensitivity bytes (Antheas), adds breathing mode via hw_pattern (Antheas). Dmitry Torokhov added to Cc. Scope discussion ongoing (Antheas endorses the LED part; eject scope deferred to HID maintainers); v3 held per reviewer pacing advice.
 - Teardown-UAF backport to the merged OGC driver: [OpenGamingCollective/linux-unstable#5](https://github.com/OpenGamingCollective/linux-unstable/pull/5) — **MERGED** 2026-08-25 (NeroReflex, on CI green); the unstable OGC kernel no longer ships the vulnerable teardown
