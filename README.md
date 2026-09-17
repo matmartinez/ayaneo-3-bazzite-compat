@@ -45,6 +45,20 @@ Corrected version also submitted upstream at pastaq's request as
 [ValveSoftware/gamescope#2347](https://github.com/ValveSoftware/gamescope/pull/2347)
 (co-authored with sknowledge1, supersedes their #2260).
 
+**SHIPPED in Bazzite** (verified on device 2026-09-17 after an OS update):
+the script is now in the image at
+`/usr/share/gamescope/scripts/00-gamescope/displays/ayaneo.3.oled.lua` and
+matches without any local copy — the `~/.config` copy was retired (backup at
+`~/ayaneo.3.oled.lua.bak` on the device). Root-cause note for the record,
+established while answering matte-schwartz's review question on #2347: the
+panel's EDID CTA block advertises BT2020RGB + ST2084, so script-less
+gamescope exposes HDR with PQ output encoding on a natively gamma-2.2 panel
+— that PQ path, not colorimetry, caused the washed-out look. The EDID base
+block carries the same primaries the script states (the
+`di_edid_get_chromaticity_coords` fallback uses them identically, A/B
+verified via bind-mount hiding the script), so the script's load-bearing
+line is `eotf = gamescope.eotf.gamma22`.
+
 ## Regression 2: magic modules (detachable controllers) not supported
 
 **What changed in 44:** hhd was removed in
@@ -86,8 +100,8 @@ must be heap-allocated.
 - Driver: [OpenGamingCollective/linux#101](https://github.com/OpenGamingCollective/linux/pull/101) (base `features/ayaneo`, checkpatch-clean, with MAINTAINERS + ABI docs)
 - Config: [OpenGamingCollective/kernel-packages#35](https://github.com/OpenGamingCollective/kernel-packages/pull/35) (`CONFIG_HID_AYANEO=m`)
 - Driver: **MERGED** into [OpenGamingCollective/linux-unstable](https://github.com/OpenGamingCollective/linux-unstable/pull/3) (2026-08-24, by NeroReflex, after two review rounds + CI config-gate/gcc build; squashed `[FOR-UPSTREAM]` patch + `[NOT-FOR-UPSTREAM]` CI-fragment commit). The unstable OGC kernel now ships hid-ayaneo. Post-merge note: an AI-review claim that `hid_is_usb()` is uhid-spoofable was retracted as slop (since ~7.x it checks `ll_driver == &usb_hid_driver`, kernel-set); hid-ayaneo never casts `dev.parent` anyway.
-- InputPlumber LED-name glob (RGB keeps matching the renamed LED): [ShadowBlip/InputPlumber#666](https://github.com/ShadowBlip/InputPlumber/pull/666)
-- Plugin udev rule (plugin-store prerequisite per pastaq): [ShadowBlip/OpenGamepadUI#536](https://github.com/ShadowBlip/OpenGamepadUI/pull/536) — **APPROVED** by pastaq 2026-08-27, awaiting merge; registry PR to OpenGamepadUI-plugins follows once merged
+- InputPlumber LED-name glob (RGB keeps matching the renamed LED): [ShadowBlip/InputPlumber#666](https://github.com/ShadowBlip/InputPlumber/pull/666) — **MERGED** by pastaq 2026-09-03
+- Plugin udev rule (plugin-store prerequisite per pastaq): [ShadowBlip/OpenGamepadUI#536](https://github.com/ShadowBlip/OpenGamepadUI/pull/536) — **MERGED** by pastaq 2026-09-03, released in OpenGamepadUI **v0.46.1**; the registry PR to OpenGamepadUI-plugins is now unblocked (next plugin action)
 - Coordination/interface feedback: comment posted on [ShadowBlip/OpenGamepadUI#528](https://github.com/ShadowBlip/OpenGamepadUI/issues/528)
 - OGUI overlay-mode plugin bug found while building the UI: reported as [ShadowBlip/OpenGamepadUI#535](https://github.com/ShadowBlip/OpenGamepadUI/issues/535)
 - OGUI plugin (`ogui-plugin/`): working on-device; registry/in-tree submission deliberately held until #528 answers plugin-vs-platform-code (packaging differs, code ports either way)
@@ -112,10 +126,23 @@ must be heap-allocated.
   `brightness_set_blocking` deferral): "not a blocker for v3".
 - Full v2/v3 sync to the OGC tree:
   [OpenGamingCollective/linux-unstable#11](https://github.com/OpenGamingCollective/linux-unstable/pull/11)
-  — **opened 2026-08-28**, six commits (v2 remainder, timing constants, then
+  — opened 2026-08-28, six commits (v2 remainder, timing constants, then
   the four review adoptions with Suggested-by: Derek J. Clark); end state
   byte-identical to `hid-ayaneo/hid-ayaneo.c`. Patches archived in
-  `hid-ayaneo/lu-sync/`.
+  `hid-ayaneo/lu-sync/`. **CLOSED by pastaq 2026-08-31** (process, not
+  content — CI was green): once a series is on LKML it belongs in the
+  regular OGC kernel repo, pulled from the list with `b4 am -cl <url>` and
+  `[FROM-ML]`-prefixed subjects. He asked on OGC/linux#101 (2026-09-01) to
+  update that PR once v3 is on the mailing list — so #101 is the sync path
+  now, fed by v3.
+- LKML v3: staged 2026-09-17 as
+  `hid-ayaneo/v3-0001-HID-ayaneo-Add-AYANEO-3-detachable-controller-dri.patch`
+  — single patch on hid.git for-next, driver byte-identical to workbench
+  HEAD, checkpatch clean (known ENOSYS false positive only). Under the cut:
+  v3 changelog crediting Derek J. Clark, hardware retest note, debounce
+  measurements, deferred-ABI paragraph. Cc adds Derek J. Clark, Ilpo
+  Järvinen, Armin Wolf; threaded on the v2 message. Pending user approval
+  to send; then update OGC/linux#101 via `b4 am`.
 
 **Contribution plan (maintainer-blessed pattern):**
 1. **Kernel:** write/land `hid-ayaneo` implementing what hhd does over hidraw
