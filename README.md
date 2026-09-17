@@ -135,14 +135,25 @@ must be heap-allocated.
   `[FROM-ML]`-prefixed subjects. He asked on OGC/linux#101 (2026-09-01) to
   update that PR once v3 is on the mailing list — so #101 is the sync path
   now, fed by v3.
-- LKML v3: staged 2026-09-17 as
-  `hid-ayaneo/v3-0001-HID-ayaneo-Add-AYANEO-3-detachable-controller-dri.patch`
-  — single patch on hid.git for-next, driver byte-identical to workbench
-  HEAD, checkpatch clean (known ENOSYS false positive only). Under the cut:
-  v3 changelog crediting Derek J. Clark, hardware retest note, debounce
-  measurements, deferred-ABI paragraph. Cc adds Derek J. Clark, Ilpo
-  Järvinen, Armin Wolf; threaded on the v2 message. Pending user approval
-  to send; then update OGC/linux#101 via `b4 am`.
+- LKML v3: **SENT 2026-09-17** — Message-ID
+  `20260917160722.89391-1-hello@matias.me`, threaded on v2, confirmed
+  rendering on lore. Single patch on hid.git for-next, driver
+  byte-identical to workbench HEAD, checkpatch clean (known ENOSYS false
+  positive only). Under the cut: v3 changelog crediting Derek J. Clark,
+  hardware retest note, debounce measurements, deferred-ABI paragraph. Cc
+  added Derek J. Clark, Ilpo Järvinen, Armin Wolf. Patch archived as
+  `hid-ayaneo/v3-0001-...patch`.
+- OGC/linux#101 **updated 2026-09-17** per pastaq's ask: branch rebuilt as
+  one `[FROM-ML]` commit off current `features/ayaneo` with the lore Link
+  trailer (MAINTAINERS hunk re-anchored for the older base, content
+  unchanged; driver byte-identical), PR retitled to match, comment posted
+  with the lore link. Awaiting pastaq/NeroReflex.
+- gamescope#2347 review round: matte-schwartz asked (2026-09-16) whether
+  the washed-out colors were just the old PQ script and why colorimetry is
+  re-stated. Replied 2026-09-17
+  with the source-verified root cause (EDID CTA advertises BT2020+ST2084 →
+  script-less gamescope picks PQ output encoding; colorimetry table conceded
+  as redundant, offered to drop it; full edid-decode attached).
 
 **Contribution plan (maintainer-blessed pattern):**
 1. **Kernel:** write/land `hid-ayaneo` implementing what hhd does over hidraw
