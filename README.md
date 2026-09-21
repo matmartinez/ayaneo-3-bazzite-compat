@@ -97,14 +97,15 @@ Protocol notes: 65-byte unnumbered reports, checksum = LE16 sum of bytes
 must be heap-allocated.
 
 **Submitted:**
-- Driver: [OpenGamingCollective/linux#101](https://github.com/OpenGamingCollective/linux/pull/101) (base `features/ayaneo`, checkpatch-clean, with MAINTAINERS + ABI docs)
-- Config: [OpenGamingCollective/kernel-packages#35](https://github.com/OpenGamingCollective/kernel-packages/pull/35) (`CONFIG_HID_AYANEO=m`)
+- Driver: [OpenGamingCollective/linux#101](https://github.com/OpenGamingCollective/linux/pull/101) — **MERGED 2026-09-18** by KyleGospo (single `[FROM-ML]` commit, v3 state, lore Link trailer): hid-ayaneo is in the regular OGC kernel (`features/ayaneo`)
+- Config: [OpenGamingCollective/kernel-packages#35](https://github.com/OpenGamingCollective/kernel-packages/pull/35) (`CONFIG_HID_AYANEO=m`) — **MERGED 2026-09-20**: the next OGC kernel build ships the driver, so the next Bazzite kernel bump ends the insmod ritual
 - Driver: **MERGED** into [OpenGamingCollective/linux-unstable](https://github.com/OpenGamingCollective/linux-unstable/pull/3) (2026-08-24, by NeroReflex, after two review rounds + CI config-gate/gcc build; squashed `[FOR-UPSTREAM]` patch + `[NOT-FOR-UPSTREAM]` CI-fragment commit). The unstable OGC kernel now ships hid-ayaneo. Post-merge note: an AI-review claim that `hid_is_usb()` is uhid-spoofable was retracted as slop (since ~7.x it checks `ll_driver == &usb_hid_driver`, kernel-set); hid-ayaneo never casts `dev.parent` anyway.
 - InputPlumber LED-name glob (RGB keeps matching the renamed LED): [ShadowBlip/InputPlumber#666](https://github.com/ShadowBlip/InputPlumber/pull/666) — **MERGED** by pastaq 2026-09-03
 - Plugin udev rule (plugin-store prerequisite per pastaq): [ShadowBlip/OpenGamepadUI#536](https://github.com/ShadowBlip/OpenGamepadUI/pull/536) — **MERGED** by pastaq 2026-09-03, released in OpenGamepadUI **v0.46.1**; the registry PR to OpenGamepadUI-plugins is now unblocked (next plugin action)
 - Coordination/interface feedback: comment posted on [ShadowBlip/OpenGamepadUI#528](https://github.com/ShadowBlip/OpenGamepadUI/issues/528)
 - OGUI overlay-mode plugin bug found while building the UI: reported as [ShadowBlip/OpenGamepadUI#535](https://github.com/ShadowBlip/OpenGamepadUI/issues/535)
-- OGUI plugin: **submitted to the plugin store 2026-09-17** as
+- OGUI plugin: **IN THE PLUGIN STORE** — registry PR merged by pastaq
+  2026-09-18. Submitted 2026-09-17 as
   [ShadowBlip/OpenGamepadUI-plugins#9](https://github.com/ShadowBlip/OpenGamepadUI-plugins/pull/9).
   The plugin now lives in its own repo
   [matmartinez/OpenGamepadUI-ayaneo-modules](https://github.com/matmartinez/OpenGamepadUI-ayaneo-modules)
